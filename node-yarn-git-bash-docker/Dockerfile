@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM node:12.18.3-alpine3.10
 MAINTAINER littledian <1197434548@qq.com>
 
 # set mirror
@@ -12,31 +12,12 @@ RUN apk update \
   tzdata \
   && cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-# install nodejs
-ENV NODE_VERSION 12.18.3
-
-RUN apk add --no-cache curl gcc g++ python make linux-headers \
-  && curl -fsSLO --compressed "https://npm.taobao.org/mirrors/node/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz" \
-  && tar -xf "node-v$NODE_VERSION.tar.xz" \
-  && cd "node-v$NODE_VERSION" \
-  && ./configure  \
-  && make -j$(getconf _NPROCESSORS_ONLN) \
-  && make install \
-  && cd .. \
-  && rm -Rf "node-v$NODE_VERSION" \
-  && rm "node-v$NODE_VERSION.tar.xz" \
-  # smoke tests
+# set registry
+RUN npm config set registry http://npm-registry.qunhequnhe.com/ \
+  && npm config set sass_binary_site https://npm.taobao.org/mirrors/node-sass \
+  # smoke test
   && node --version \
   && npm --version \
-  # set registry
-  && npm config set registry http://npm-registry.qunhequnhe.com/ \
-  && npm config set sass_binary_site https://npm.taobao.org/mirrors/node-sass
-
-# install yarn
-ENV YARN_VERSION 1.22.4
-
-RUN npm i yarn -g \
-  # smoke test
   && yarn --version
 
 RUN apk add --no-cache \
@@ -99,5 +80,5 @@ ENV DOCKER_TLS_CERTDIR=/certs
 RUN mkdir /certs /certs/client && chmod 1777 /certs /certs/client
 # (doing both /certs and /certs/client so that if Docker does a "copy-up" into a volume defined on /certs/client, it will "do the right thing" by default in a way that still works for rootless users)
 
-RUN rm -rf /var/cache/apk/* \
-
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["bash"]
