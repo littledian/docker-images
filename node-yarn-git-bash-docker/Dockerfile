@@ -10,6 +10,7 @@ RUN apk update \
   && apk add --no-cache bash \
   git \
   tzdata \
+  docker-cli \
   && cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 # set registry
