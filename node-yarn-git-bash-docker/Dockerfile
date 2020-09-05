@@ -14,8 +14,9 @@ RUN apk update \
   && cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 # set registry
-RUN npm config set registry http://npm-registry.qunhequnhe.com/ \
+RUN npm config set registry https://registry.npm.taobao.org \
   && npm config set sass_binary_site https://npm.taobao.org/mirrors/node-sass \
+  && yarn config set registry https://registry.npm.taobao.org \
   # smoke test
   && node --version \
   && npm --version \
